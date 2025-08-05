@@ -144,7 +144,7 @@ def run_tests(count=1, delay=5): # Default 1 test - delay 5 sec between tests
         # Delay between tests - only if more than one test
         if i < count - 1 and count > 1:
             console.print(f"[dim]Waiting {delay} seconds...[/dim]")
-            time.sleep(delay)
+            countdown_delay(delay)
     
     # Show final results
     if count > 1:
@@ -152,6 +152,19 @@ def run_tests(count=1, delay=5): # Default 1 test - delay 5 sec between tests
         if failed_tests > 0:
             console.print(f"[red]Failed: {failed_tests} tests[/red]")
         display_summary(results)
+
+def countdown_delay(seconds):
+    """Display a countdown timer"""
+    with Progress(
+        TextColumn("[bold blue]Next test in:"),
+        TextColumn("[bold red]{task.fields[countdown]}s"),
+        console=console
+    ) as progress:
+        task = progress.add_task("Countdown", total=seconds, countdown=seconds)
+        
+        for remaining in range(seconds, 0, -1):
+            progress.update(task, advance=1, countdown=remaining)
+            time.sleep(1)
 
 if __name__ == "__main__":
     import argparse
